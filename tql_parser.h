@@ -26,13 +26,14 @@ namespace tql
     public:
         enum e_variant_type
         {
-            evt_float = 1,
+            // 按照类型提升排序，向取值小的提升
+            evt_string = 1,
             evt_double = 2,
-            evt_int32 = 3,
-            evt_uint32 = 4,
-            evt_int64 = 5,
-            evt_uint64 = 6,
-            evt_string = 7,
+            evt_float = 3,
+            evt_int64 = 4,
+            evt_uint64 = 5,
+            evt_int32 = 6,
+            evt_uint32 = 7,
             evt_field_desc = 8,
         };
 
@@ -46,6 +47,7 @@ namespace tql
             return *this;
         }
 
+        const std::string& to_string();
         int type_;
         union
         {
@@ -130,6 +132,7 @@ namespace tql
         const std::string* get_field(int idx) const;
         int append_condition(const expr2_t& condition);
         const expr2_t* get_condition(int idx) const;
+        const expr2_t* get_last_condition() const;
         int append_assignment(const assign_t& assign);
         const assign_t* get_assignment(int idx) const;
         int append_math(const expr2_t& assign);
@@ -149,6 +152,7 @@ namespace tql
         void set_errno(int err) { errno_ = err; }
         int get_errno() const { return errno_; }
         void clear_errno() { errno_ = epe_no_error; }
+        const std::vector<std::string>& get_fields() const { return fields_; }
 
     private:
         parser_context_t(const parser_context_t&) { /*forbidden*/ }

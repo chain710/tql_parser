@@ -1,7 +1,25 @@
 #include "tql_parser.h"
+#include <stdio.h>
 
 using namespace tql;
 using namespace std;
+
+const std::string& tql::variant_t::to_string()
+{
+    char tmp[128];
+    switch (type_)
+    {
+    case evt_double: snprintf(tmp, sizeof(tmp), "%f", numeral_.double_val_); str_ = tmp; break;
+    case evt_float: snprintf(tmp, sizeof(tmp), "%f", numeral_.float_val_); str_ = tmp; break;
+    case evt_int64: snprintf(tmp, sizeof(tmp), "%"PRId64, numeral_.int64_val_); str_ = tmp; break;
+    case evt_uint64: snprintf(tmp, sizeof(tmp), "%"PRIu64, numeral_.uint64_val_); str_ = tmp; break;
+    case evt_int32: snprintf(tmp, sizeof(tmp), "%d", numeral_.int32_val_); str_ = tmp; break;
+    case evt_uint32: snprintf(tmp, sizeof(tmp), "%u", numeral_.uint32_val_); str_ = tmp; break;
+    default: break;
+    }
+
+    return str_;
+}
 
 tql::parser_context_t::parser_context_t()
 {
@@ -103,6 +121,16 @@ const expr2_t* tql::parser_context_t::get_math( int idx ) const
     }
 
     return &math_.at(idx);
+}
+
+const expr2_t* tql::parser_context_t::get_last_condition() const
+{
+    if (conditions_.empty())
+    {
+        return NULL;
+    }
+
+    return &conditions_.at(conditions_.size() - 1);
 }
 
 int tql::var_to_expr2( parser_context_t &ctx, int var )
