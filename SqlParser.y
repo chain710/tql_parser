@@ -52,16 +52,18 @@ select ::= SELECT cols from where. {
     ctx->set_stmt_type(tql::parser_context_t::est_select);
 }
 
-update ::= UPDATE table sets where. {
+update ::= UPDATE table(T) sets where. {
     ctx->set_stmt_type(tql::parser_context_t::est_update);
+    ctx->set_table(T.buf_);
 }
 
 delete ::= DELETE from where. {
     ctx->set_stmt_type(tql::parser_context_t::est_delete);
 }
 
-insert ::= INSERT table sets where. {
+insert ::= INSERT table(T) sets where_key. {
     ctx->set_stmt_type(tql::parser_context_t::est_insert);
+    ctx->set_table(T.buf_);
 }
 
 cols ::= cols COMMA field(B). {
@@ -105,7 +107,10 @@ where_key ::= WHERE key(B). {
 sets ::= SET assignments. {
 }
 
-assignments ::= assignments COMMA assignments_m .{
+assignments ::= assignments COMMA assignments_m. {
+}
+
+assignments ::= assignments_m. {
 }
 
 assignments_m(A) ::= field(B) EQ(OP) math_expr(C). {
