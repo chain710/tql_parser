@@ -4,6 +4,24 @@
 using namespace tql;
 using namespace std;
 
+template<typename T>
+int set_val_by_type(tql::variant_t& Var, int Type, const T& Val)
+{
+    switch (Type)
+    {
+    case variant_t::evt_double: Var.numeral_.double_val_ = (double)Val; break;
+    case variant_t::evt_float: Var.numeral_.float_val_ = (float)Val; break;
+    case variant_t::evt_int32: Var.numeral_.int32_val_ = (int)Val; break;
+    case variant_t::evt_uint32: Var.numeral_.uint32_val_ = (unsigned int)Val; break;
+    case variant_t::evt_int64: Var.numeral_.int64_val_ = (int64_t)Val; break;
+    case variant_t::evt_uint64: Var.numeral_.uint64_val_ = (uint64_t)Val; break;
+    default: return -1;
+    }
+
+    Var.type_ = Type;
+    return 0;
+}
+
 const std::string& tql::variant_t::to_string()
 {
     char tmp[128];
@@ -19,6 +37,28 @@ const std::string& tql::variant_t::to_string()
     }
 
     return str_;
+}
+
+int tql::variant_t::cast_type( int type )
+{
+    if (type == type_)
+    {
+        return 0;
+    }
+
+    switch (type_)
+    {
+    case variant_t::evt_double: return set_val_by_type(*this, type, numeral_.double_val_);
+    case variant_t::evt_float: return set_val_by_type(*this, type, numeral_.float_val_);
+    case variant_t::evt_int32: return set_val_by_type(*this, type, numeral_.int32_val_);
+    case variant_t::evt_uint32: return set_val_by_type(*this, type, numeral_.uint32_val_);
+    case variant_t::evt_int64: return set_val_by_type(*this, type, numeral_.int64_val_);
+    case variant_t::evt_uint64: return set_val_by_type(*this, type, numeral_.uint64_val_);
+    case variant_t::evt_string: str_ = to_string(); type_ = variant_t::evt_string; break;
+    default: /*不支持的类型转换*/ return -1;
+    }
+
+    return 0;
 }
 
 tql::parser_context_t::parser_context_t()

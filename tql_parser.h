@@ -48,6 +48,8 @@ namespace tql
         }
 
         const std::string& to_string();
+        int cast_type(int type);
+
         int type_;
         union
         {
