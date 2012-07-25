@@ -1,24 +1,44 @@
 #include "tql_parser.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 using namespace tql;
 using namespace std;
 
+// dst_type:目标类型(不支持字符串), val:目标取值
 template<typename T>
-int set_val_by_type(tql::variant_t& Var, int Type, const T& Val)
+int conv_var_by_type(tql::variant_t& var, int dst_type, const T& val)
 {
-    switch (Type)
+    switch (dst_type)
     {
-    case variant_t::evt_double: Var.numeral_.double_val_ = (double)Val; break;
-    case variant_t::evt_float: Var.numeral_.float_val_ = (float)Val; break;
-    case variant_t::evt_int32: Var.numeral_.int32_val_ = (int)Val; break;
-    case variant_t::evt_uint32: Var.numeral_.uint32_val_ = (unsigned int)Val; break;
-    case variant_t::evt_int64: Var.numeral_.int64_val_ = (int64_t)Val; break;
-    case variant_t::evt_uint64: Var.numeral_.uint64_val_ = (uint64_t)Val; break;
+    case variant_t::evt_double: var.numeral_.double_val_ = (double)val; break;
+    case variant_t::evt_float: var.numeral_.float_val_ = (float)val; break;
+    case variant_t::evt_int32: var.numeral_.int32_val_ = (int)val; break;
+    case variant_t::evt_uint32: var.numeral_.uint32_val_ = (unsigned int)val; break;
+    case variant_t::evt_int64: var.numeral_.int64_val_ = (int64_t)val; break;
+    case variant_t::evt_uint64: var.numeral_.uint64_val_ = (uint64_t)val; break;
     default: return -1;
     }
 
-    Var.type_ = Type;
+    var.type_ = dst_type;
+    return 0;
+}
+
+template<>
+int conv_var_by_type<string>(tql::variant_t& var, int type, const string& val)
+{
+    switch (type)
+    {
+    case variant_t::evt_double: var.numeral_.double_val_ = strtod(val.c_str(), NULL); break;
+    case variant_t::evt_float: var.numeral_.float_val_ = strtof(val.c_str(), NULL); break;
+    case variant_t::evt_int32: var.numeral_.int32_val_ = strtol(val.c_str(), NULL, 10); break;
+    case variant_t::evt_uint32: var.numeral_.uint32_val_ = strtoul(val.c_str(), NULL, 10); break;
+    case variant_t::evt_int64: var.numeral_.int64_val_ = strtoll(val.c_str(), NULL, 10); break;
+    case variant_t::evt_uint64: var.numeral_.uint64_val_ = strtoull(val.c_str(), NULL, 10); break;
+    default: return -1;
+    }
+
+    var.type_ = type;
     return 0;
 }
 
@@ -46,15 +66,22 @@ int tql::variant_t::cast_type( int type )
         return 0;
     }
 
+    if (type == variant_t::evt_string)
+    {
+        str_ = to_string();
+        type_ = variant_t::evt_string;
+        return 0;
+    }
+
     switch (type_)
     {
-    case variant_t::evt_double: return set_val_by_type(*this, type, numeral_.double_val_);
-    case variant_t::evt_float: return set_val_by_type(*this, type, numeral_.float_val_);
-    case variant_t::evt_int32: return set_val_by_type(*this, type, numeral_.int32_val_);
-    case variant_t::evt_uint32: return set_val_by_type(*this, type, numeral_.uint32_val_);
-    case variant_t::evt_int64: return set_val_by_type(*this, type, numeral_.int64_val_);
-    case variant_t::evt_uint64: return set_val_by_type(*this, type, numeral_.uint64_val_);
-    case variant_t::evt_string: str_ = to_string(); type_ = variant_t::evt_string; break;
+    case variant_t::evt_double: return conv_var_by_type(*this, type, numeral_.double_val_);
+    case variant_t::evt_float: return conv_var_by_type(*this, type, numeral_.float_val_);
+    case variant_t::evt_int32: return conv_var_by_type(*this, type, numeral_.int32_val_);
+    case variant_t::evt_uint32: return conv_var_by_type(*this, type, numeral_.uint32_val_);
+    case variant_t::evt_int64: return conv_var_by_type(*this, type, numeral_.int64_val_);
+    case variant_t::evt_uint64: return conv_var_by_type(*this, type, numeral_.uint64_val_);
+    case variant_t::evt_string: return conv_var_by_type(*this, type, str_);
     default: /*不支持的类型转换*/ return -1;
     }
 
