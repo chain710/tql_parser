@@ -47,6 +47,48 @@ namespace tql
             return *this;
         }
 
+        void set_string(const std::string& str)
+        {
+            str_ = str;
+            type_ = evt_string;
+        }
+
+        void set_double(double val)
+        {
+            numeral_.double_val_ = val;
+            type_ = evt_double;
+        }
+
+        void set_float(float val)
+        {
+            numeral_.float_val_ = val;
+            type_ = evt_float;
+        }
+
+        void set_int64(int64_t val)
+        {
+            numeral_.int64_val_ = val;
+            type_ = evt_int64;
+        }
+
+        void set_uint64(uint64_t val)
+        {
+            numeral_.uint64_val_ = val;
+            type_ = evt_uint64;
+        }
+
+        void set_int32(int val)
+        {
+            numeral_.int32_val_ = val;
+            type_ = evt_int32;
+        }
+
+        void set_uint32(unsigned int val)
+        {
+            numeral_.uint32_val_ = val;
+            type_ = evt_uint32;
+        }
+
         const std::string& to_string();
         int cast_type(int type);
 
@@ -126,6 +168,9 @@ namespace tql
             epe_syntax_error = 1,
             epe_stackoverflow = 2,
             epe_invalid_variant = 3,
+            epe_yylex_init_error = 4,
+            epe_yylex_error = 5,
+            epe_init_grammar_error = 6,
         };
 
         // functions
@@ -142,6 +187,7 @@ namespace tql
         int append_variant(const variant_t& var);
         const variant_t* get_variant(int idx) const;
         void clear();
+        int from_string(const std::string stmt);
 
         void set_table(const std::string& tbl) { table_ = tbl; }
         const std::string& get_table() const { return table_; }
@@ -153,6 +199,7 @@ namespace tql
 
         void set_errno(int err) { errno_ = err; }
         int get_errno() const { return errno_; }
+        const std::string& get_error_nearby() const { return error_near_; }
         void clear_errno() { errno_ = epe_no_error; }
         const std::vector<std::string>& get_fields() const { return fields_; }
 
@@ -168,6 +215,7 @@ namespace tql
         std::vector<assign_t> assigns_;   // update, insert
         std::vector<variant_t> var_pool_;   // pool, for scanner
         std::vector<expr2_t> math_; // 数学表达式, math expr
+        std::string error_near_;
     };
 
     // utility function for scanner

@@ -190,11 +190,19 @@ table(A) ::= ID(B). {
     snprintf(A.buf_, sizeof(A.buf_), "%s", B->str_.c_str());
 }
 
+inst_val(A) ::= MINUS INTEGER(B). {
+    // FIXME
+    tql::variant_t tmp;
+    tmp.type_ = tql::variant_t::evt_int64;
+    tmp.numeral_.int64_val_ = -strtoll(B->str_.c_str(), NULL, 10);
+    A = ctx->append_variant(tmp);
+}
+
 inst_val(A) ::= INTEGER(B). {
     // FIXME
     tql::variant_t tmp;
     tmp.type_ = tql::variant_t::evt_int64;
-    //A.numeral_.int64_val_ = strtoll(B->str_.c_str(), NULL, 10);
+    tmp.numeral_.int64_val_ = strtoll(B->str_.c_str(), NULL, 10);
     A = ctx->append_variant(tmp);
 }
 

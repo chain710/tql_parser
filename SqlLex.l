@@ -115,12 +115,3 @@ KEY         {
                 return -1;
             }
 %%
-
-#ifndef _USER_DEFINE_YYERROR_
-
-void yyerror(const char* str)
-{
-    fprintf(stderr,"yyerror: %s\n",str);
-}
-
-#endif

@@ -94,8 +94,8 @@ int main(int argc, char** argv)
 
     for (int i = 0; NULL != pctx.get_math(i); ++i)
     {
-        const expr2_t* math = pctx.get_math(i);
-        printf("math[%d], type=%d, op=%d, left=%d, right=%d\n", i, math->type_, math->op_, math->left_, math->right_);
+        expr2_t* math = (expr2_t*)pctx.get_math(i);
+        printf("math[%d], type=%d, op=%d, left=%d, right=%d, val=%s\n", i, math->type_, math->op_, math->left_, math->right_, math->var_.to_string().c_str());
     }
 
     return 0;

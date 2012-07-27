@@ -1,4 +1,6 @@
 #include "tql_parser.h"
+#include "SqlParser.h"
+#include "SqlLex.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -124,6 +126,7 @@ void tql::parser_context_t::clear()
     assigns_.clear();
     var_pool_.clear();
     math_.clear();
+    error_near_.clear();
 }
 
 int tql::parser_context_t::append_variant( const variant_t& var )
@@ -198,6 +201,80 @@ const expr2_t* tql::parser_context_t::get_last_condition() const
     }
 
     return &conditions_.at(conditions_.size() - 1);
+}
+
+int tql::parser_context_t::from_string( const std::string stmt )
+{
+    clear();
+    int ret;
+    int parser_ret = 0;
+    yyscan_t lex_scanner;
+    ret = yylex_init(&lex_scanner);
+    if (ret)
+    {
+        set_errno(epe_yylex_init_error);
+        return -1;
+    }
+
+    yy_scan_string(stmt.c_str(), lex_scanner);
+    vector<token_t> tokens;
+    tokens.reserve(128);
+    token_t tmp_token;
+    while (true)
+    {
+        ret = yylex(lex_scanner);
+        tmp_token.tid_ = ret;
+        tmp_token.str_ = yyget_text(lex_scanner);
+        tokens.push_back(tmp_token);
+        if (ret < 0)
+        {
+            set_errno(epe_yylex_error);
+            parser_ret = -1;
+            break;
+        }
+        else if (0 == ret)
+        {
+            break;
+        }
+    }
+
+    yylex_destroy(lex_scanner);
+    if (parser_ret) return parser_ret;
+
+    // ·ÖÎöÓï·¨
+    void* grammar_parser = ParseAlloc(malloc);
+    if (NULL == grammar_parser)
+    {
+        set_errno(epe_init_grammar_error);
+        return -1;
+    }
+
+    do 
+    {
+        int token_size = tokens.size();
+        int i = 0;
+        for (; i < token_size; ++i)
+        {
+            Parse(grammar_parser, tokens[i].tid_, &tokens[i], this);
+            if (get_errno())
+            {
+                error_near_ = tokens[i].str_;
+                parser_ret = -1;
+                break;
+            }
+        }
+
+        if (get_errno())
+        {
+            // error near
+            error_near_ = tokens[i].str_;
+            parser_ret = -1;
+            break;
+        }
+    } while (false);
+
+    ParseFree(grammar_parser, free);
+    return parser_ret;
 }
 
 int tql::var_to_expr2( parser_context_t &ctx, int var )
