@@ -90,6 +90,10 @@ cols ::= field(B). {
     }
 }
 
+cols ::= MULTI. {
+    // simply do nothing
+}
+
 from ::= FROM table(B). {
     ctx->set_table(B.buf_);
 }
