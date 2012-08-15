@@ -32,7 +32,9 @@ DELETE      {
 UPDATE      {
                 return TK_UPDATE;
             }
-
+REPLACE     {
+                return TK_REPLACE;
+            }
 SET         {
                 return TK_SET;
             }
@@ -72,6 +74,12 @@ KEY         {
             }
 \/          {
                 return TK_DIV;
+            }
+\|          {
+                return TK_BIN_OR;
+            }
+&           {
+                return TK_BIN_AND;
             }
 \(          {
                 return TK_LB;

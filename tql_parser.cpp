@@ -3,6 +3,7 @@
 #include "SqlLex.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 using namespace tql;
 using namespace std;
@@ -291,4 +292,20 @@ int tql::var_to_expr2( parser_context_t &ctx, int var )
     add.op_ = -1;
     add.var_ = *v;
     return ctx.append_math(add);
+}
+
+void tql::cast_int( variant_t& var, int64_t val )
+{
+    if (val <= (int64_t)INT_MAX)
+    {
+        var.set_int32(val);
+    }
+    else if (val <= (int64_t)UINT_MAX)
+    {
+        var.set_uint32(val);
+    }
+    else
+    {
+        var.set_int64(val);
+    }
 }

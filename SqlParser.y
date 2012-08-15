@@ -34,6 +34,7 @@
 %left OR.
 %left EQ GT GE LT LE COMMA.
 %left PLUS MINUS.
+%left BIN_AND BIN_OR.
 %left MULTI DIV.
 
 stmt ::= select. {
@@ -48,12 +49,20 @@ stmt ::= insert. {
 stmt ::= delete. {
 }
 
+stmt ::= replace. {
+}
+
 select ::= SELECT cols from where. {
     ctx->set_stmt_type(tql::parser_context_t::est_select);
 }
 
 update ::= UPDATE table(T) sets where. {
     ctx->set_stmt_type(tql::parser_context_t::est_update);
+    ctx->set_table(T.buf_);
+}
+
+replace ::= REPLACE table(T) sets where_key. {
+    ctx->set_stmt_type(tql::parser_context_t::est_replace);
     ctx->set_table(T.buf_);
 }
 
@@ -160,7 +169,7 @@ logic_expr_m(A) ::= LB logic_expr_m(B) RB. {
     A = B;
 }
 
-math_expr(A) ::= math_expr(B) PLUS|MINUS|MULTI|DIV(OP) math_expr(C). {
+math_expr(A) ::= math_expr(B) PLUS|MINUS|MULTI|DIV|BIN_AND|BIN_OR(OP) math_expr(C). {
     // append math
     tql::expr2_t tmp;
     tmp.type_ = tql::expr2_t::eet_math;
@@ -195,7 +204,6 @@ table(A) ::= ID(B). {
 }
 
 inst_val(A) ::= MINUS INTEGER(B). {
-    // FIXME
     tql::variant_t tmp;
     tmp.type_ = tql::variant_t::evt_int64;
     tmp.numeral_.int64_val_ = -strtoll(B->str_.c_str(), NULL, 10);
@@ -203,10 +211,8 @@ inst_val(A) ::= MINUS INTEGER(B). {
 }
 
 inst_val(A) ::= INTEGER(B). {
-    // FIXME
     tql::variant_t tmp;
-    tmp.type_ = tql::variant_t::evt_int64;
-    tmp.numeral_.int64_val_ = strtoll(B->str_.c_str(), NULL, 10);
+    cast_int(tmp, strtoll(B->str_.c_str(), NULL, 10));
     A = ctx->append_variant(tmp);
 }
 

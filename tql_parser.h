@@ -160,6 +160,7 @@ namespace tql
             est_insert = 2,
             est_update = 3,
             est_delete = 4,
+            est_replace = 5,
         };
 
         enum e_parser_errno
@@ -220,6 +221,7 @@ namespace tql
 
     // utility function for scanner
     int var_to_expr2(parser_context_t &ctx, int var);
+    void cast_int(variant_t& var, int64_t val);
 }
 
 #endif
