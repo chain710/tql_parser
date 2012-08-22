@@ -147,6 +147,10 @@ logic_expr(A) ::= logic_expr_m(B). {
     A = B;
 }
 
+logic_expr(A) ::= LB logic_expr(B) RB. {
+    A = B;
+}
+
 logic_expr(A) ::= logic_expr(B) AND|OR(OP) logic_expr_m(C). {
     tql::expr2_t tmp;
     tmp.type_ = tql::expr2_t::eet_logic;
@@ -163,10 +167,6 @@ logic_expr_m(A) ::= math_expr(B) EQ|GT|GE|LT|LE(OP) math_expr(C). {
     tmp.left_ = B;
     tmp.right_ = C;
     A = ctx->append_condition(tmp);
-}
-
-logic_expr_m(A) ::= LB logic_expr_m(B) RB. {
-    A = B;
 }
 
 math_expr(A) ::= math_expr(B) PLUS|MINUS|MULTI|DIV|BIN_AND|BIN_OR(OP) math_expr(C). {
