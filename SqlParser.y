@@ -195,7 +195,7 @@ math_expr_m(A) ::= inst_val(B). {
     A = var_to_expr2(*ctx, B);
 }
 
-key(A) ::= KEY LB INTEGER(B) RB. {
+key(A) ::= KEY LB ID(B) RB. {
     snprintf(A.buf_, sizeof(A.buf_), "%s", B->str_.c_str());
 }
 
