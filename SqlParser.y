@@ -27,7 +27,6 @@
 %type inst_val {int}
 %type field {int}
 %type assignments_m {int}
-%type key {tql::simple_str_buf_t}
 %type table {tql::simple_str_buf_t}
 
 %left AND.
@@ -113,8 +112,7 @@ where ::= where_key. {
 where ::= where_key AND logic_expr. {
 }
 
-where_key ::= WHERE key(B). {
-    ctx->set_key(B.buf_);
+where_key ::= WHERE key. {
 }
 
 sets ::= SET assignments. {
@@ -195,8 +193,15 @@ math_expr_m(A) ::= inst_val(B). {
     A = var_to_expr2(*ctx, B);
 }
 
-key(A) ::= KEY LB ID|INTEGER(B) RB. {
-    snprintf(A.buf_, sizeof(A.buf_), "%s", B->str_.c_str());
+key ::= KEY LB key_m RB. {
+}
+
+key_m ::= ID|INTEGER(A). {
+    ctx->append_key(A->str_);
+}
+
+key_m ::= key_m COMMA ID|INTEGER(A). {
+    ctx->append_key(A->str_);
 }
 
 table(A) ::= ID(B). {

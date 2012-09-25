@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
     if (pctx.get_errno())
     {
-        printf("parse error:%d\n", pctx.get_errno());
+        printf("parse error:%d, near %s\n", pctx.get_errno(), pctx.get_error_nearby().c_str());
         return -1;
     }
 
@@ -71,7 +71,6 @@ int main(int argc, char** argv)
 
     // ´òÓ¡Óï·¨Ê÷
     printf("stmt type:%d\n", pctx.get_stmt_type());
-    printf("key:%s\n", pctx.get_key().c_str());
     printf("table:%s\n", pctx.get_table().c_str());
 
     for (int i = 0; NULL != pctx.get_field(i); ++i)
@@ -96,6 +95,12 @@ int main(int argc, char** argv)
     {
         expr2_t* math = (expr2_t*)pctx.get_math(i);
         printf("math[%d], type=%d, op=%d, left=%d, right=%d, val=%s\n", i, math->type_, math->op_, math->left_, math->right_, math->var_.to_string().c_str());
+    }
+
+    for (int i = 0; NULL != pctx.get_key(i); ++i)
+    {
+        const string* key = pctx.get_key(i);
+        printf("key[%d]=%s\n", i, key->c_str());
     }
 
     return 0;

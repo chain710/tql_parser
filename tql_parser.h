@@ -187,13 +187,15 @@ namespace tql
         const expr2_t* get_math(int idx) const;
         int append_variant(const variant_t& var);
         const variant_t* get_variant(int idx) const;
+        void append_key(const std::string& keystr);
+        const std::string* get_key(int idx) const;
         void clear();
         int from_string(const std::string stmt);
 
         void set_table(const std::string& tbl) { table_ = tbl; }
         const std::string& get_table() const { return table_; }
-        void set_key(const std::string& key) { key_ = key; }
-        const std::string& get_key() const { return key_; }
+        //void set_key(const std::string& key) { key_ = key; }
+        //const std::string& get_key() const { return key_; }
 
         void set_stmt_type(int type) { stmt_type_ = type; }
         int get_stmt_type() const { return stmt_type_; }
@@ -203,6 +205,7 @@ namespace tql
         const std::string& get_error_nearby() const { return error_near_; }
         void clear_errno() { errno_ = epe_no_error; }
         const std::vector<std::string>& get_fields() const { return fields_; }
+        const std::vector<std::string>& get_keys() const { return keys_; }
 
     private:
         parser_context_t(const parser_context_t&) { /*forbidden*/ }
@@ -216,6 +219,7 @@ namespace tql
         std::vector<assign_t> assigns_;   // update, insert
         std::vector<variant_t> var_pool_;   // pool, for scanner
         std::vector<expr2_t> math_; // 数学表达式, math expr
+        std::vector<std::string> keys_; // multi keys
         std::string error_near_;
     };
 

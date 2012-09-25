@@ -128,6 +128,7 @@ void tql::parser_context_t::clear()
     var_pool_.clear();
     math_.clear();
     error_near_.clear();
+    keys_.clear();
 }
 
 int tql::parser_context_t::append_variant( const variant_t& var )
@@ -276,6 +277,21 @@ int tql::parser_context_t::from_string( const std::string stmt )
 
     ParseFree(grammar_parser, free);
     return parser_ret;
+}
+
+void tql::parser_context_t::append_key( const std::string& keystr )
+{
+    keys_.push_back(keystr);
+}
+
+const std::string* tql::parser_context_t::get_key( int idx ) const
+{
+    if (idx < 0 || idx >= (int)keys_.size())
+    {
+        return NULL;
+    }
+
+    return &keys_.at(idx);
 }
 
 int tql::var_to_expr2( parser_context_t &ctx, int var )
