@@ -149,7 +149,7 @@ logic_expr(A) ::= LB logic_expr(B) RB. {
     A = B;
 }
 
-logic_expr(A) ::= logic_expr(B) AND|OR(OP) logic_expr_m(C). {
+logic_expr(A) ::= logic_expr(B) AND|OR(OP) logic_expr(C). {
     tql::expr2_t tmp;
     tmp.type_ = tql::expr2_t::eet_logic;
     tmp.op_ = OP->tid_;
