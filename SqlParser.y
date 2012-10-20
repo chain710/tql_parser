@@ -221,6 +221,13 @@ inst_val(A) ::= INTEGER(B). {
     A = ctx->append_variant(tmp);
 }
 
+inst_val(A) ::= QUOTE STRING(B) QUOTE. {
+    tql::variant_t tmp;
+    tmp.type_ = tql::variant_t::evt_string;
+    tmp.str_ = B->str_;
+    A = ctx->append_variant(tmp);
+}
+
 field(A) ::= FIELD|ID(B). {
     tql::variant_t tmp;
     tmp.type_ = tql::variant_t::evt_field_desc;

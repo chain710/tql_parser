@@ -8,6 +8,7 @@
 %option noyywrap
 /*可重入的*/
 %option reentrant
+%x STRING
 
 DIGIT   [0-9]
 ID      [a-zA-Z][a-zA-Z0-9_]*
@@ -110,7 +111,17 @@ KEY         {
 \=          {
                 return TK_EQ;
             }
-
+\"          {
+                BEGIN(STRING);
+                return TK_QUOTE;
+            }
+<STRING>[^"]+ {
+                return TK_STRING;
+            }
+<STRING>\"  {
+                BEGIN(INITIAL);
+                return TK_QUOTE;
+            }
 \n          {
                 /* ignore end of line */;
             }
