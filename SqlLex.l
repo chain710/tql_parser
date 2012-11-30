@@ -111,6 +111,9 @@ KEY         {
 \=          {
                 return TK_EQ;
             }
+!=          {
+                return TK_UNEQ;
+            }
 \"          {
                 BEGIN(STRING);
                 return TK_QUOTE;

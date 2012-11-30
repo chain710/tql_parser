@@ -94,13 +94,13 @@ int main(int argc, char** argv)
     for (int i = 0; NULL != pctx.get_math(i); ++i)
     {
         expr2_t* math = (expr2_t*)pctx.get_math(i);
-        printf("math[%d], type=%d, op=%d, left=%d, right=%d, val=%s\n", i, math->type_, math->op_, math->left_, math->right_, math->var_.to_string().c_str());
+        printf("math[%d], type=%d, op=%d, left=%d, right=%d, val=%s, len=%d\n", i, math->type_, math->op_, math->left_, math->right_, math->var_.to_string().c_str(), math->var_.to_string().length());
     }
 
     for (int i = 0; NULL != pctx.get_key(i); ++i)
     {
         const string* key = pctx.get_key(i);
-        printf("key[%d]=%s\n", i, key->c_str());
+        printf("key[%d]=%s, len=%d\n", i, key->c_str(), key->length());
     }
 
     return 0;

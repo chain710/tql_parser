@@ -31,7 +31,7 @@
 
 %left AND.
 %left OR.
-%left EQ GT GE LT LE COMMA.
+%left EQ UNEQ GT GE LT LE COMMA.
 %left PLUS MINUS.
 %left BIN_AND BIN_OR.
 %left MULTI DIV.
@@ -158,7 +158,7 @@ logic_expr(A) ::= logic_expr(B) AND|OR(OP) logic_expr(C). {
     A = ctx->append_condition(tmp);
 }
 
-logic_expr_m(A) ::= math_expr(B) EQ|GT|GE|LT|LE(OP) math_expr(C). {
+logic_expr_m(A) ::= math_expr(B) EQ|UNEQ|GT|GE|LT|LE(OP) math_expr(C). {
     tql::expr2_t tmp;
     tmp.type_ = tql::expr2_t::eet_logic;
     tmp.op_ = OP->tid_;
@@ -225,6 +225,13 @@ inst_val(A) ::= QUOTE STRING(B) QUOTE. {
     tql::variant_t tmp;
     tmp.type_ = tql::variant_t::evt_string;
     tmp.str_ = B->str_;
+    A = ctx->append_variant(tmp);
+}
+
+inst_val(A) ::= QUOTE QUOTE. {
+    tql::variant_t tmp;
+    tmp.type_ = tql::variant_t::evt_string;
+    tmp.str_.clear();
     A = ctx->append_variant(tmp);
 }
 
