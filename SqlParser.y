@@ -235,7 +235,7 @@ inst_val(A) ::= QUOTE QUOTE. {
     A = ctx->append_variant(tmp);
 }
 
-field(A) ::= FIELD|ID(B). {
+field(A) ::= ID(B). {
     tql::variant_t tmp;
     tmp.type_ = tql::variant_t::evt_field_desc;
     tmp.str_ = B->str_;

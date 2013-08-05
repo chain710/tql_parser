@@ -11,8 +11,8 @@
 %x STRING
 
 DIGIT   [0-9]
-ID      [a-zA-Z][a-zA-Z0-9_]*
-ARRAY_E {ID}\[{DIGIT}+\]
+ID      [a-zA-Z0-9_]+
+/*ID      [a-zA-Z][a-zA-Z0-9_]* */
 
 %%
 {DIGIT}+    {
@@ -57,9 +57,6 @@ FROM        {
             }
 KEY         {
                 return TK_KEY;
-            }
-(((({ARRAY_E}|{ID})\.)+({ARRAY_E}|{ID}))|{ARRAY_E}) {
-                return TK_FIELD;
             }
 {ID}        {
                 return TK_ID;
